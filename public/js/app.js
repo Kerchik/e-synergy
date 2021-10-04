@@ -71290,8 +71290,12 @@ var DocumentForm = function DocumentForm() {
         console.error('Please fill all fields');
         return;
       } else if (formValues[i].type === '2' && !formValues[i].select_values) {
-        console.error('Please fill select values field');
+        console.error('select_values is empty');
         return;
+      } else if (formValues[i].type === '2' && !isJsonString(formValues[i].select_values)) {
+        console.error('Invalid JSON is select_values field');
+        return;
+      } else if (formValues[i].type === '2' && isJsonString(formValues[i].select_values)) {//formValues[i].select_values = JSON.stringify(formValues[i].select_values)
       }
     }
 
@@ -71303,6 +71307,16 @@ var DocumentForm = function DocumentForm() {
     })["catch"](function (e) {
       console.log(e);
     });
+  };
+
+  var isJsonString = function isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+
+    return true;
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
@@ -71381,13 +71395,13 @@ var DocumentForm = function DocumentForm() {
         return handleChange(index, e);
       }
     })));
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "button",
     className: "btn btn-primary",
     onClick: addFormFields
-  }, "Pievienot vel"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  }, "Pievienot vel"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "button",
-    className: "btn btn-success",
+    className: "btn btn-success w-100",
     onClick: submit
   }, "Submit"));
 };
@@ -71527,6 +71541,11 @@ var DocumentView = function DocumentView() {
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
     _api_requests__WEBPACK_IMPORTED_MODULE_2__["default"].getDocument(id).then(function (_ref) {
       var data = _ref.data;
+
+      if (!data) {
+        throw 'Document with this id was not found!';
+      }
+
       setDocumentName(data.documentName);
       var fields = data.fields;
       fields.sort(function (a, b) {
@@ -71535,6 +71554,7 @@ var DocumentView = function DocumentView() {
       setDocumentFields(fields);
     })["catch"](function (e) {
       console.error(e);
+      history.push('/');
     });
   }, []);
 
@@ -71569,7 +71589,17 @@ var DocumentView = function DocumentView() {
       onChange: function onChange(e) {
         return handleChange(index, e);
       }
-    }), field.field_type === 3 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    }), field.field_type === 2 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("select", {
+      value: field.value,
+      onChange: function onChange(e) {
+        return handleChange(index, e);
+      }
+    }, JSON.parse(field.select_values).map(function (el, index) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("option", {
+        key: index,
+        value: el.value
+      }, el.label);
+    })), field.field_type === 3 && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
       type: "number",
       className: "form-control",
       value: field.value,

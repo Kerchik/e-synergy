@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { useHistory } from 'react-router-dom'
 import requests from '../api/requests'
 
@@ -46,8 +46,13 @@ const DocumentForm = () => {
                 console.error('Please fill all fields')
                 return
             } else if (formValues[i].type === '2' && !formValues[i].select_values) {
-                console.error('Please fill select values field')
+                console.error('select_values is empty')
                 return
+            } else if (formValues[i].type === '2' && !isJsonString(formValues[i].select_values)) {
+                console.error('Invalid JSON is select_values field')
+                return
+            } else if (formValues[i].type === '2' && isJsonString(formValues[i].select_values)) {
+                //formValues[i].select_values = JSON.stringify(formValues[i].select_values)
             }
         }
         requests.createDocument({'documentName': documentName, 'formValues': {...formValues}})
@@ -58,6 +63,16 @@ const DocumentForm = () => {
             console.log(e)
         })
     }
+
+    const isJsonString = (str) =>  {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     return (
         <form onSubmit={submit}>
             <div className="form-group">
@@ -128,6 +143,7 @@ const DocumentForm = () => {
                     </div>
                 </div>
             ))}
+            <hr/>
             <button 
                 type="button"
                 className="btn btn-primary"
@@ -135,9 +151,10 @@ const DocumentForm = () => {
             >
                 Pievienot vel
             </button>
+            <hr/>
             <button 
                 type="button"
-                className="btn btn-success"
+                className="btn btn-success w-100"
                 onClick={submit}
             >
                 Submit

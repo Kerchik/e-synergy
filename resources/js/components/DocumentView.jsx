@@ -12,6 +12,9 @@ const DocumentView = () => {
     useEffect(() => {
         requests.getDocument(id)
         .then(({data}) => {
+            if (!data) {
+                throw 'Document with this id was not found!'
+            }
             setDocumentName(data.documentName)
             const fields = data.fields
             fields.sort((a,b) => (a.field_seq > b.field_seq) ? 1 : ((b.field_seq > a.field_seq) ? -1 : 0))
@@ -19,6 +22,7 @@ const DocumentView = () => {
         })
         .catch(e => {
             console.error(e)
+            history.push('/')
         })
     }, [])
 
@@ -50,6 +54,13 @@ const DocumentView = () => {
                                             value={field.value}
                                             onChange={e => handleChange(index, e)}
                                         /> 
+                                    }
+                                    {field.field_type === 2 && 
+                                         <select value={field.value} onChange={e => handleChange(index, e)}>
+                                            {JSON.parse(field.select_values).map((el, index) => (
+                                                <option key={index} value={el.value}>{el.label}</option>
+                                            ))}
+                                        </select>
                                     }
                                     {field.field_type === 3 && 
                                         <input

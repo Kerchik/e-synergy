@@ -10,6 +10,9 @@ class DocumentConfigurationController extends Controller
 {
     public function getDocument($id) {
         $document = Document::where('id', $id)->first();
+        if (!$document) {
+           return null;
+        }
         $documentInfo = DocumentConfiguration::where('document_id', $id)->get();
         $response['documentName'] = $document['document_name'];
         $response['fields'] = $documentInfo;

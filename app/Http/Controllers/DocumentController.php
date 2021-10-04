@@ -19,6 +19,29 @@ class DocumentController extends Controller
     }
 
     public function create(Request $request) {
+        $request->validate([
+            'documentName' => ['required'],
+        ]);
+
+        /*
+        Were not able to validate each field in $request['formValues'] array. Never had
+        simillar task in Laravel. Perhaps if I had more time, I would be able to make normal validation.
+        Currently checks only 'documentName' field. Below you can see, how I tried to validate those fields
+
+        foreach ($request['formValues'] as $value) {
+            $request->validate([
+                'name' => ['required'],
+                'number' => ['required'],
+                'type' => ['required'],
+            ]);
+            if (intval($value['type'] === 2)) {
+                $request->validate([
+                    'select_values' => ['json', 'required']
+                ]);
+            }
+        }
+        */
+
         $document = new Document([
 			'document_name' => $request['documentName'],		
 			'created_at' => now(),
@@ -31,6 +54,7 @@ class DocumentController extends Controller
                 'field_type' => intval($value['type']),		
                 'field_name' => $value['name'],		
                 'document_id' => $document->id,		
+                'select_values' => intval($value['type']) === 2 ? $value['select_values'] : null,		
             ]);
             $documentConfiguration->save();
         }
