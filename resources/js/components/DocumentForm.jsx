@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'
+import { useHistory } from 'react-router-dom'
 import requests from '../api/requests'
 
 const DocumentForm = () => {
+    let history = useHistory()
     const [documentName, setDocumentName] = useState('')
     const [formValues, setFormValues] = useState(
         [
@@ -38,9 +40,19 @@ const DocumentForm = () => {
 
     const submit = (e) => {
         e.preventDefault();
+        for (let i=0; i<formValues.length; i++) {
+            // Had no time for better validation
+            if (!formValues[i].name || !formValues[i].type || !formValues[i].number) {
+                console.error('Please fill all fields')
+                return
+            } else if (formValues[i].type === '2' && !formValues[i].select_values) {
+                console.error('Please fill select values field')
+                return
+            }
+        }
         requests.createDocument({'documentName': documentName, 'formValues': {...formValues}})
         .then((response) => {
-            console.log(response)
+            history.push('/')
         })
         .catch(e => {
             console.log(e)
@@ -53,6 +65,7 @@ const DocumentForm = () => {
                 <input
                     type="text"
                     name="document-name"
+                    required
                     className="form-control"
                     value={documentName}
                     onChange={e => setDocumentName(e.target.value)}
@@ -65,6 +78,7 @@ const DocumentForm = () => {
                         <input
                             type="number"
                             name="number"
+                            required
                             className="form-control"
                             value={el.number}
                             onChange={e => handleChange(index, e)}
@@ -84,19 +98,20 @@ const DocumentForm = () => {
                         <input
                             type="text"
                             name="name"
+                            required
                             className="form-control"
-                            value={el.name || ""}
+                            value={el.name}
                             onChange={e => handleChange(index, e)}
                         />
                     </div>
                     { el.type === "2" &&
                         <div className="form-group">
-                            <label>Lauka nosaukums:</label>
+                            <label>Select vertības:</label>
                             <input
                                 type="text"
-                                name="name"
+                                name="select_values"
                                 className="form-control"
-                                value={el.name || ""}
+                                value={el.select_values}
                                 onChange={e => handleChange(index, e)}
                             />
                         </div>

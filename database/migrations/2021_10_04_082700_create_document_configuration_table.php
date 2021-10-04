@@ -20,7 +20,7 @@ class CreateDocumentConfigurationTable extends Migration
             $table->integer('field_type')->nullable(false);
             $table->string('field_name')->nullable(false);
             $table->integer('document_id')->nullable(false);
-            $table->string('select_values');
+            $table->string('select_values')->nullable();
         });
     }
 

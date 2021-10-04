@@ -71213,7 +71213,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _api_requests__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../api/requests */ "./resources/js/api/requests.js");
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
+/* harmony import */ var _api_requests__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../api/requests */ "./resources/js/api/requests.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -71243,7 +71244,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+
 var DocumentForm = function DocumentForm() {
+  var history = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["useHistory"])();
+
   var _useState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(''),
       _useState2 = _slicedToArray(_useState, 2),
       documentName = _useState2[0],
@@ -71279,11 +71283,23 @@ var DocumentForm = function DocumentForm() {
 
   var submit = function submit(e) {
     e.preventDefault();
-    _api_requests__WEBPACK_IMPORTED_MODULE_1__["default"].createDocument({
+
+    for (var i = 0; i < formValues.length; i++) {
+      // Had no time for better validation
+      if (!formValues[i].name || !formValues[i].type || !formValues[i].number) {
+        console.error('Please fill all fields');
+        return;
+      } else if (formValues[i].type === '2' && !formValues[i].select_values) {
+        console.error('Please fill select values field');
+        return;
+      }
+    }
+
+    _api_requests__WEBPACK_IMPORTED_MODULE_2__["default"].createDocument({
       'documentName': documentName,
       'formValues': _objectSpread({}, formValues)
     }).then(function (response) {
-      console.log(response);
+      history.push('/');
     })["catch"](function (e) {
       console.log(e);
     });
@@ -71296,6 +71312,7 @@ var DocumentForm = function DocumentForm() {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Document name:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     type: "text",
     name: "document-name",
+    required: true,
     className: "form-control",
     value: documentName,
     onChange: function onChange(e) {
@@ -71309,6 +71326,7 @@ var DocumentForm = function DocumentForm() {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Sec\u012Bba:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
       type: "number",
       name: "number",
+      required: true,
       className: "form-control",
       value: el.number,
       onChange: function onChange(e) {
@@ -71336,18 +71354,19 @@ var DocumentForm = function DocumentForm() {
     }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Lauka nosaukums:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
       type: "text",
       name: "name",
+      required: true,
       className: "form-control",
-      value: el.name || "",
+      value: el.name,
       onChange: function onChange(e) {
         return handleChange(index, e);
       }
     })), el.type === "2" && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
       className: "form-group"
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Lauka nosaukums:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Select vert\u012Bbas:"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
       type: "text",
-      name: "name",
+      name: "select_values",
       className: "form-control",
-      value: el.name || "",
+      value: el.select_values,
       onChange: function onChange(e) {
         return handleChange(index, e);
       }
