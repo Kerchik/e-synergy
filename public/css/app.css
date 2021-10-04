@@ -10942,3 +10942,12 @@ a.text-dark:focus {
   }
 }
 
+.form-group label.required:after {
+  content: "*";
+  color: red;
+}
+
+.btn-back-wrapper {
+  padding: 1.25rem;
+}
+

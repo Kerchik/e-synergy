@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Document extends Model
+{
+    protected $table = 'document';
+
+    protected $fillable = ['document_name', 'created_at'];
+
+    public $timestamps = false;
+}
